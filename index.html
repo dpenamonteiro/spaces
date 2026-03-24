@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spaces · Financial Model</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #09090B; --card: #131316; --card2: #1A1A1F; --border: #27272A;
+  --accent: #00E5A0; --accentDim: rgba(0,229,160,0.10); --accentGlow: rgba(0,229,160,0.20);
+  --red: #EF4444; --redDim: rgba(239,68,68,0.10);
+  --amber: #F59E0B; --amberDim: rgba(245,158,11,0.10);
+  --blue: #3B82F6; --blueDim: rgba(59,130,246,0.10);
+  --purple: #A78BFA; --purpleDim: rgba(167,139,250,0.10);
+  --t1: #FAFAFA; --t2: #A1A1AA; --t3: #52525B;
+  --serif: 'Instrument Serif', Georgia, serif;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'DM Sans', -apple-system, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:800px;margin:0 auto;padding:40px 24px 80px}
+.tag{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:0.2em;font-weight:600}
+h1{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-0.02em;line-height:1.15;margin:8px 0 0}
+h1 i{font-style:italic;color:var(--accent)}
+.subtitle{font-size:14px;color:var(--t2);margin-top:8px;line-height:1.5}
+h2{font-family:var(--serif);font-size:22px;font-weight:400;margin:40px 0 16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+h3{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:14px}
+.nav{display:flex;gap:2px;background:var(--card);border-radius:14px;padding:3px;margin:28px 0 32px;border:1px solid var(--border)}
+.nav button{flex:1;padding:10px 0;border:none;border-radius:12px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:0.04em;font-family:var(--sans);transition:all 0.25s;background:transparent;color:var(--t3)}
+.nav button.on{background:var(--accent);color:var(--bg)}
+.nav button:hover:not(.on){color:var(--t2)}
+.card{background:var(--card);border-radius:18px;padding:24px;margin-bottom:14px;border:1px solid var(--border);transition:border-color 0.2s}
+.card:hover{border-color:#3f3f46}
+.sg{margin-bottom:18px}.sg:last-child{margin-bottom:0}
+.sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.sl{font-size:13px;color:var(--t2)}.sv{font-size:17px;font-weight:600;font-family:var(--mono);letter-spacing:-0.03em}
+.st{position:relative;height:32px;display:flex;align-items:center}
+.sb{position:absolute;left:0;right:0;height:3px;border-radius:2px;background:#27272A}
+.sf{height:100%;border-radius:2px;transition:width 0.1s}
+.sn{position:absolute;width:18px;height:18px;border-radius:50%;pointer-events:none;transition:left 0.1s}
+.st input{position:absolute;width:100%;height:32px;opacity:0;cursor:pointer;margin:0}
+.mg{display:grid;gap:10px;margin-bottom:14px}
+.mg.c3{grid-template-columns:repeat(3,1fr)}.mg.c4{grid-template-columns:repeat(4,1fr)}.mg.c2{grid-template-columns:repeat(2,1fr)}
+.m{border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.m.lg{padding:20px}
+.ml{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px}
+.mv{font-size:22px;font-weight:700;font-family:var(--mono);letter-spacing:-0.03em}
+.m.lg .mv{font-size:28px}
+.m .orb{position:absolute;top:-24px;right:-24px;width:72px;height:72px;border-radius:50%;opacity:0.04}
+.gn{background:var(--accentDim);border:1px solid rgba(0,229,160,0.08)}.gn .mv{color:var(--accent)}.gn .orb{background:var(--accent)}
+.rd{background:var(--redDim);border:1px solid rgba(239,68,68,0.08)}.rd .mv{color:var(--red)}.rd .orb{background:var(--red)}
+.am{background:var(--amberDim);border:1px solid rgba(245,158,11,0.08)}.am .mv{color:var(--amber)}.am .orb{background:var(--amber)}
+.bl{background:var(--blueDim);border:1px solid rgba(59,130,246,0.08)}.bl .mv{color:var(--blue)}.bl .orb{background:var(--blue)}
+.pp{background:var(--purpleDim);border:1px solid rgba(167,139,250,0.08)}.pp .mv{color:var(--purple)}.pp .orb{background:var(--purple)}
+.wr{display:flex;align-items:center;gap:10px;margin-bottom:5px;height:30px}
+.wl{width:120px;font-size:11px;color:var(--t3);text-align:right;flex-shrink:0}
+.wbw{flex:1;position:relative;height:22px}
+.wb{position:absolute;height:100%;border-radius:5px;transition:width 0.4s}
+.wa{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:600;font-family:var(--mono)}
+.tr{display:flex;justify-content:space-between;padding:9px 16px;border-bottom:1px solid #1e1e22;font-size:12px}
+.tr:last-child{border-bottom:none}
+.trh{background:#111114;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--t3)}
+.trt{background:var(--accentDim)}.trs{background:var(--blueDim)}
+.flow{display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;padding:14px;background:#0e0e11;border-radius:12px;border:1px solid var(--border)}
+.fp{padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;font-family:var(--mono);white-space:nowrap}
+.fa{color:var(--t3);font-size:16px}
+.fl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:0.06em;text-align:center;margin-top:1px}
+.bw{display:flex;align-items:flex-end;gap:2px;height:64px}
+.bi{flex:1;min-width:2px;max-width:10px;border-radius:2px;transition:all 0.3s}
+.ms{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);transition:opacity 0.3s}
+.ms:last-child{border-bottom:none}
+.md{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all 0.3s}
+.md.on{background:var(--accent);color:var(--bg);box-shadow:0 0 10px var(--accentGlow)}
+.md.off{background:#27272A;color:var(--t3)}
+.ro{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.rp{flex:1;min-width:140px;border-radius:12px;padding:14px;border:1px solid var(--border);background:var(--card2)}
+.rp h4{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-weight:600}
+.rp .rv{font-size:20px;font-weight:700;font-family:var(--mono);margin-bottom:2px}
+.rp .rl{font-size:11px;color:var(--t3)}
+.flag{font-size:14px;margin-right:4px}
+.vtbl{width:100%;border-collapse:collapse;font-size:12px}
+.vtbl th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--t3);font-weight:600;border-bottom:1px solid var(--border)}
+.vtbl td{padding:8px 12px;border-bottom:1px solid #1e1e22;color:var(--t2)}
+.vtbl td.num{font-family:var(--mono);font-weight:600;text-align:right;color:var(--t1)}
+.vtbl tr.hl td{background:var(--accentDim);color:var(--t1)}
+.vtbl tr.hl td.num{color:var(--accent)}
+.section{display:none}.section.on{display:block}
+.footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);font-size:10px;color:var(--t3);line-height:1.7}
+.chart-wrap{position:relative;height:220px;margin:16px 0}
+.sens-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-top:12px}
+.sens-tbl th{padding:7px 10px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:0.06em;color:var(--t3);font-weight:600;border-bottom:1px solid var(--border)}
+.sens-tbl td{padding:7px 10px;border-bottom:1px solid #1e1e22;font-family:var(--mono);font-size:11px;font-weight:500}
+.sens-tbl .neg{color:var(--red)}.sens-tbl .pos{color:var(--accent)}
+.sens-tbl tr:first-child td{color:var(--t3);font-style:italic}
+.sens-tbl tr:nth-child(3) td{color:var(--accent);font-weight:700}
+@media(max-width:600px){.mg.c3,.mg.c4{grid-template-columns:repeat(2,1fr)}h1{font-size:28px}.ro{flex-direction:column}.chart-wrap{height:180px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tag">Spaces · Financial Model · v2 · March 2026</div>
+  <h1>The economics of <i>doing nothing</i></h1>
+  <p class="subtitle">Zero capex. Sublease the spread. Scale across Iberia. Here's what that looks like.</p>
+
+  <div class="nav">
+    <button class="on" onclick="go('unit',this)">Unit economics</button>
+    <button onclick="go('portfolio',this)">Portfolio</button>
+    <button onclick="go('valuation',this)">Valuation</button>
+  </div>
+
+  <!-- ===== UNIT ECONOMICS ===== -->
+  <div id="s-unit" class="section on">
+    <h2>Assumptions</h2>
+    <div class="card">
+      <h3>Station parameters</h3>
+      <div class="sg"><div class="sh"><span class="sl">Leasable area per station</span><span class="sv" id="v-area" style="color:var(--accent)">80 sqm</span></div><div class="st"><div class="sb"><div class="sf" id="f-area"></div></div><div class="sn" id="t-area"></div><input type="range" id="area" min="40" max="150" step="5" value="80" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">F&B kiosks per station</span><span class="sv" id="v-kiosks" style="color:var(--accent)">3</span></div><div class="st"><div class="sb"><div class="sf" id="f-kiosks"></div></div><div class="sn" id="t-kiosks"></div><input type="range" id="kiosks" min="1" max="5" step="1" value="3" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">Avg. tenant revenue per kiosk</span><span class="sv" id="v-trev" style="color:var(--accent)">€600K/yr</span></div><div class="st"><div class="sb"><div class="sf" id="f-trev"></div></div><div class="sn" id="t-trev"></div><input type="range" id="trev" min="400" max="2000" step="50" value="600" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">Initial setup cost per kiosk</span><span class="sv" id="v-setup" style="color:var(--purple)">€25,000</span></div><div class="st"><div class="sb"><div class="sf" id="f-setup"></div></div><div class="sn" id="t-setup"></div><input type="range" id="setup" min="10000" max="80000" step="5000" value="25000" oninput="calc()"></div></div>
+    </div>
+    <div class="card">
+      <h3>Revenue structure</h3>
+      <div class="flow" id="flow"></div>
+      <div class="sg"><div class="sh"><span class="sl">Fixed rent from tenants (€/sqm/yr)</span><span class="sv" id="v-rent" style="color:var(--accent)">€1,200</span></div><div class="st"><div class="sb"><div class="sf" id="f-rent"></div></div><div class="sn" id="t-rent"></div><input type="range" id="rent" min="400" max="2000" step="50" value="1200" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">Revenue share charged to tenants</span><span class="sv" id="v-charge" style="color:var(--accent)">4.0%</span></div><div class="st"><div class="sb"><div class="sf" id="f-charge"></div></div><div class="sn" id="t-charge"></div><input type="range" id="charge" min="1" max="10" step="0.5" value="4" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">Revenue share passed to operator</span><span class="sv" id="v-pass" style="color:var(--red)">1.0%</span></div><div class="st"><div class="sb"><div class="sf" id="f-pass"></div></div><div class="sn" id="t-pass"></div><input type="range" id="pass" min="0" max="5" step="0.5" value="1" oninput="calc()"></div></div>
+    </div>
+    <div class="card">
+      <h3>Cost structure</h3>
+      <div class="sg"><div class="sh"><span class="sl">Master lease rent (€/sqm/yr)</span><span class="sv" id="v-mlease" style="color:var(--amber)">€250</span></div><div class="st"><div class="sb"><div class="sf" id="f-mlease"></div></div><div class="sn" id="t-mlease"></div><input type="range" id="mlease" min="50" max="600" step="10" value="250" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">OPEX per station (€/yr)</span><span class="sv" id="v-opex" style="color:var(--amber)">€15,000</span></div><div class="st"><div class="sb"><div class="sf" id="f-opex"></div></div><div class="sn" id="t-opex"></div><input type="range" id="opex" min="5000" max="40000" step="1000" value="15000" oninput="calc()"></div></div>
+    </div>
+
+    <h2>Unit P&L — per station</h2>
+    <div class="mg c4" id="u-metrics"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="card" style="margin:0;padding:20px 20px 14px"><h3>EBITDA waterfall</h3><div id="u-waterfall"></div></div>
+      <div class="card" style="margin:0"><h3>Revenue vs costs</h3><div class="chart-wrap"><canvas id="donut"></canvas></div></div>
+    </div>
+    <div class="mg c4" id="u-extras"></div>
+
+    <h2>Sensitivity analysis</h2>
+    <div class="card"><h3>What happens if revenue changes?</h3><div id="sens"></div></div>
+  </div>
+
+  <!-- ===== PORTFOLIO ===== -->
+  <div id="s-portfolio" class="section">
+    <h2>Rollout strategy</h2>
+    <div class="ro" id="rollout-cards"></div>
+    <div class="card">
+      <h3>Portfolio scale</h3>
+      <div class="sg"><div class="sh"><span class="sl">Total active stations</span><span class="sv" id="v-stations" style="color:var(--accent)">10</span></div><div class="st"><div class="sb"><div class="sf" id="f-stations"></div></div><div class="sn" id="t-stations"></div><input type="range" id="stations" min="1" max="150" step="1" value="10" oninput="calc()"></div></div>
+      <div style="margin-top:12px"><h3>Portfolio growth</h3><div id="bar-chart" class="bw"></div><div style="display:flex;justify-content:space-between;margin-top:4px"><span style="font-size:9px;color:var(--t3)">1</span><span style="font-size:9px;color:var(--t3)" id="bar-label"></span><span style="font-size:9px;color:var(--t3)">150</span></div></div>
+    </div>
+    <h2>Portfolio financials</h2>
+    <div class="mg c3" id="p-metrics"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div class="card" style="margin:0;padding:16px 0 0;overflow:hidden"><h3 style="padding:0 16px 8px">P&L build-up</h3><div id="p-pnl"></div></div>
+      <div class="card" style="margin:0"><h3>EBITDA by scale</h3><div class="chart-wrap"><canvas id="scaleChart"></canvas></div></div>
+    </div>
+    <h2>Operating leverage</h2>
+    <div class="card" style="padding:0;overflow:hidden"><div id="leverage-tbl"></div></div>
+    <h2>Milestones</h2>
+    <div class="card"><div id="milestones"></div></div>
+  </div>
+
+  <!-- ===== VALUATION ===== -->
+  <div id="s-valuation" class="section">
+    <h2>Valuation assumptions</h2>
+    <div class="card">
+      <div class="sg"><div class="sh"><span class="sl">EBITDA multiple (low)</span><span class="sv" id="v-mlow" style="color:var(--amber)">8.0x</span></div><div class="st"><div class="sb"><div class="sf" id="f-mlow"></div></div><div class="sn" id="t-mlow"></div><input type="range" id="mlow" min="4" max="12" step="0.5" value="8" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">EBITDA multiple (mid)</span><span class="sv" id="v-mmid" style="color:var(--accent)">12.0x</span></div><div class="st"><div class="sb"><div class="sf" id="f-mmid"></div></div><div class="sn" id="t-mmid"></div><input type="range" id="mmid" min="6" max="18" step="0.5" value="12" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">EBITDA multiple (high)</span><span class="sv" id="v-mhigh" style="color:var(--blue)">16.0x</span></div><div class="st"><div class="sb"><div class="sf" id="f-mhigh"></div></div><div class="sn" id="t-mhigh"></div><input type="range" id="mhigh" min="10" max="25" step="0.5" value="16" oninput="calc()"></div></div>
+      <div class="sg"><div class="sh"><span class="sl">Initial equity invested</span><span class="sv" id="v-equity" style="color:var(--purple)">€250K</span></div><div class="st"><div class="sb"><div class="sf" id="f-equity"></div></div><div class="sn" id="t-equity"></div><input type="range" id="equity" min="50000" max="1000000" step="25000" value="250000" oninput="calc()"></div></div>
+    </div>
+    <h2>Valuation at scale</h2>
+    <div class="card" style="padding:0;overflow:hidden"><table class="vtbl" id="val-tbl"></table></div>
+    <h2>Equity value progression</h2>
+    <div class="mg c3" id="v-metrics"></div>
+    <h2>Return profile</h2>
+    <div class="mg c3" id="r-metrics"></div>
+  </div>
+
+  <div class="footer" id="footer"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var E=v=>(v<0?'-':'')+'€'+Math.abs(Math.round(v)).toLocaleString('en');
+var EK=v=>{var a=Math.abs(Math.round(v));var s=a>=1e6?(a/1e6).toFixed(1)+'M':a>=1e3?Math.round(a/1e3)+'K':a;return(v<0?'-':'')+'€'+s};
+var P=v=>Math.round(v*100)+'%';
+var X=v=>v.toFixed(1)+'x';
+
+function usl(id,pct,c){var f=document.getElementById('f-'+id),t=document.getElementById('t-'+id);if(f){f.style.width=Math.max(0,Math.min(100,pct))+'%';f.style.background='linear-gradient(90deg,'+c+'55,'+c+')'}if(t){t.style.left='calc('+Math.max(0,Math.min(100,pct))+'% - 9px)';t.style.background=c;t.style.boxShadow='0 0 10px '+c+'44'}}
+function mc(l,v,fmt,cls,lg){return'<div class="m'+(lg?' lg ':' ')+cls+'"><div class="ml">'+l+'</div><div class="mv">'+fmt(v)+'</div><div class="orb"></div></div>'}
+function go(s,btn){document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));document.querySelectorAll('.section').forEach(s=>s.classList.remove('on'));document.getElementById('s-'+s).classList.add('on');btn.classList.add('on');calc()}
+
+var donutChart=null,scaleChartObj=null;
+
+function calc(){
+  var area=+document.getElementById('area').value
+  var kiosks=+document.getElementById('kiosks').value
+  var trev=+document.getElementById('trev').value*1000
+  
+  var setup=+document.getElementById('setup').value
+  var rent=+document.getElementById('rent').value
+  var charge=+document.getElementById('charge').value
+  var pass=+document.getElementById('pass').value
+  var mlease=+document.getElementById('mlease').value
+  var opex=+document.getElementById('opex').value
+  var stations=+document.getElementById('stations').value
+  var mlow=+document.getElementById('mlow').value
+  var mmid=+document.getElementById('mmid').value
+  var mhigh=+document.getElementById('mhigh').value
+  var equity=+document.getElementById('equity').value
+
+  var chP=charge/100,paP=pass/100,keP=Math.max(0,chP-paP)
+  var totalTenantRev=trev*kiosks
+
+  var fixedSublease=area*rent
+  var revShareIn=totalTenantRev*chP
+  var totalRev=fixedSublease+revShareIn
+
+  var masterLease=area*mlease
+  var revShareOut=totalTenantRev*paP
+  var totalCost=masterLease+revShareOut+opex
+
+  var ebitda=totalRev-totalCost
+  var margin=totalRev>0?ebitda/totalRev:0
+  var sqmProd=totalRev/area
+  var setupTotal=setup*kiosks
+  var paybackMonths=ebitda>0?Math.round(setupTotal/ebitda*12):999
+
+
+  document.getElementById('v-area').textContent=area+' sqm'
+  document.getElementById('v-kiosks').textContent=kiosks
+  document.getElementById('v-trev').textContent='€'+Math.round(trev/1000)+'K/yr'
+  document.getElementById('v-setup').textContent='€'+setup.toLocaleString('en')
+  document.getElementById('v-rent').textContent='€'+rent.toLocaleString('en')
+  document.getElementById('v-charge').textContent=charge.toFixed(1)+'%'
+  document.getElementById('v-pass').textContent=pass.toFixed(1)+'%'
+  document.getElementById('v-mlease').textContent='€'+mlease.toLocaleString('en')
+  document.getElementById('v-opex').textContent='€'+opex.toLocaleString('en')
+  document.getElementById('v-stations').textContent=stations
+  document.getElementById('v-mlow').textContent=mlow.toFixed(1)+'x'
+  document.getElementById('v-mmid').textContent=mmid.toFixed(1)+'x'
+  document.getElementById('v-mhigh').textContent=mhigh.toFixed(1)+'x'
+  document.getElementById('v-equity').textContent=EK(equity)
+
+  usl('area',(area-40)/110*100,'#00E5A0')
+  usl('kiosks',(kiosks-1)/4*100,'#00E5A0')
+  usl('trev',(trev/1000-400)/1600*100,'#00E5A0')
+  usl('setup',(setup-10000)/70000*100,'#A78BFA')
+  usl('rent',(rent-400)/1600*100,'#00E5A0')
+  usl('charge',(charge-1)/9*100,'#00E5A0')
+  usl('pass',pass/5*100,'#EF4444')
+  usl('mlease',(mlease-50)/550*100,'#F59E0B')
+  usl('opex',(opex-5000)/35000*100,'#F59E0B')
+  usl('stations',(stations-1)/149*100,'#00E5A0')
+  usl('mlow',(mlow-4)/8*100,'#F59E0B')
+  usl('mmid',(mmid-6)/12*100,'#00E5A0')
+  usl('mhigh',(mhigh-10)/15*100,'#3B82F6')
+  usl('equity',(equity-50000)/950000*100,'#A78BFA')
+
+  document.getElementById('flow').innerHTML=
+    '<div style="text-align:center"><div class="fp" style="background:var(--accentDim);color:var(--accent)">'+charge.toFixed(1)+'%</div><div class="fl">charged to tenants</div></div>'+
+    '<div class="fa">=</div>'+
+    '<div style="text-align:center"><div class="fp" style="background:var(--redDim);color:var(--red)">'+pass.toFixed(1)+'%</div><div class="fl">to operator</div></div>'+
+    '<div class="fa">+</div>'+
+    '<div style="text-align:center"><div class="fp" style="background:var(--blueDim);color:var(--blue);border:1px solid rgba(59,130,246,0.2)">'+(charge-pass).toFixed(1)+'%</div><div class="fl">you keep</div></div>'
+
+  document.getElementById('u-metrics').innerHTML=
+    mc('Revenue',totalRev,E,'gn',1)+mc('Costs',totalCost,E,'rd',1)+
+    mc('EBITDA',ebitda,E,ebitda>=0?'gn':'rd',1)+mc('EBITDA margin',margin,P,margin>0.35?'gn':margin>0?'am':'rd',1)
+
+  var wi=[{l:'Fixed sublease',v:fixedSublease},{l:'Rev share ('+charge.toFixed(1)+'%)',v:revShareIn},{l:'Master lease',v:-masterLease},{l:'Rev share out ('+pass.toFixed(1)+'%)',v:-revShareOut},{l:'OPEX',v:-opex},{l:'EBITDA',v:ebitda,t:1}]
+  var mx=Math.max.apply(null,wi.map(i=>Math.abs(i.v)))||1
+  var wH='';wi.forEach(i=>{
+    var bw=Math.max(2,Math.abs(i.v)/(mx*1.2)*100),p=i.v>=0
+    var bg=i.t?(p?'linear-gradient(90deg,#00E5A088,#00E5A0)':'linear-gradient(90deg,#EF444488,#EF4444)'):(p?'linear-gradient(90deg,#00E5A033,#00E5A077)':'linear-gradient(90deg,#EF444433,#EF444477)')
+    var sh=i.t?(p?'0 0 14px var(--accentGlow)':'0 0 14px var(--redDim)'):'none'
+    var tc=i.t?'#fff':'var(--t3)'
+    wH+='<div class="wr"><div class="wl">'+i.l+'</div><div class="wbw"><div class="wb" style="width:'+bw+'%;background:'+bg+';box-shadow:'+sh+'"></div><span class="wa" style="color:'+tc+'">'+E(i.v)+'</span></div></div>'
+  })
+  document.getElementById('u-waterfall').innerHTML=wH
+
+  // Donut chart
+  var dCtx=document.getElementById('donut')
+  if(dCtx){
+    var dd=[fixedSublease,revShareIn,masterLease,revShareOut,opex]
+    var dl=['Fixed sublease','Rev share in','Master lease','Rev share out','OPEX']
+    var dc=['#00E5A0','#3B82F6','#EF4444','#F59E0B','#A78BFA']
+    if(donutChart){donutChart.data.datasets[0].data=dd;donutChart.update()}
+    else{donutChart=new Chart(dCtx,{type:'doughnut',data:{labels:dl,datasets:[{data:dd,backgroundColor:dc,borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{color:'#A1A1AA',font:{family:'DM Sans',size:10},boxWidth:10,padding:8}},tooltip:{callbacks:{label:function(c){return c.label+': '+E(c.raw)}}}}}})}}
+
+  document.getElementById('u-extras').innerHTML=
+    mc('€/sqm productivity',sqmProd,v=>'€'+Math.round(v),'bl',0)+
+    mc('Setup cost (total)',setupTotal,E,'pp',0)+
+    mc('Payback period',paybackMonths,v=>v>=999?'N/A':v+' months',paybackMonths<=18?'gn':paybackMonths<=36?'am':'rd',0)+
+    mc('Rent spread',rent-mlease,v=>'€'+Math.round(v)+'/sqm','gn',0)
+
+  // Sensitivity
+  var scenarios=[-20,-10,0,10,20]
+  var sH='<table class="sens-tbl"><thead><tr><th>Scenario</th><th>Tenant rev</th><th>Total rev</th><th>EBITDA</th><th>Margin</th><th>vs base</th></tr></thead><tbody>'
+  scenarios.forEach(s=>{
+    var adj=1+s/100,tr2=trev*adj,ttr2=tr2*kiosks
+    var fs2=area*rent,rs2=ttr2*chP,rev2=fs2+rs2
+    var rso2=ttr2*paP,cost2=masterLease+rso2+opex
+    var eb2=rev2-cost2,mg2=rev2>0?eb2/rev2:0
+    var delta=eb2-ebitda,cls=s===0?'':delta>=0?'pos':'neg'
+    sH+='<tr><td style="color:var(--t2)">'+(s>=0?'+':'')+s+'%</td><td>'+EK(tr2)+'</td><td>'+EK(rev2)+'</td><td class="'+cls+'">'+E(eb2)+'</td><td>'+P(mg2)+'</td><td class="'+cls+'">'+(s===0?'—':(delta>=0?'+':'')+E(delta))+'</td></tr>'
+  })
+  sH+='</tbody></table>'
+  document.getElementById('sens').innerHTML=sH
+
+  // === PORTFOLIO ===
+  var ptBP=Math.min(20,stations),s2=Math.max(0,stations-ptBP)
+  var ptOZ=Math.min(10,s2);s2=Math.max(0,s2-ptOZ)
+  var ptRep=Math.min(20,s2);s2=Math.max(0,s2-ptRep)
+  var ptTotal=ptBP+ptOZ+ptRep
+  var spainSt=ptTotal>=30?Math.min(100,s2):0
+  if(ptTotal<30&&s2>0){ptRep=Math.min(20,ptRep+s2);ptTotal=ptBP+ptOZ+ptRep;spainSt=0}
+  var totalActive=ptTotal+spainSt
+  stations=totalActive
+  document.getElementById('v-stations').textContent=stations
+
+  document.getElementById('rollout-cards').innerHTML=
+    '<div class="rp"><h4><span class="flag">&#x1F1F5;&#x1F1F9;</span> BP Portugal</h4><div class="rv" style="color:var(--accent)">'+ptBP+'</div><div class="rl">of 20 max</div></div>'+
+    '<div class="rp"><h4><span class="flag">&#x1F1F5;&#x1F1F9;</span> OZ Energia</h4><div class="rv" style="color:var(--accent)">'+ptOZ+'</div><div class="rl">of 10 max</div></div>'+
+    '<div class="rp"><h4><span class="flag">&#x1F1F5;&#x1F1F9;</span> Repsol PT</h4><div class="rv" style="color:var(--accent)">'+ptRep+'</div><div class="rl">of 20 max</div></div>'+
+    '<div class="rp"><h4><span class="flag">&#x1F1EA;&#x1F1F8;</span> Spain</h4><div class="rv" style="color:'+(spainSt>0?'var(--blue)':'var(--t3)')+'">'+spainSt+'</div><div class="rl">'+(ptTotal>=30?'of 100 max':'unlocks at 30 PT')+'</div></div>'
+
+  var bH='';for(var i=1;i<=150;i++){var a=i<=stations;bH+='<div class="bi" style="height:'+(a?Math.max(3,i/150*100)+'%':'3px')+';background:'+(a?(i<=ptTotal?'#00E5A0':'#3B82F6'):'#27272A')+';opacity:'+(a?0.5+i/150*0.5:0.2)+'"></div>'}
+  document.getElementById('bar-chart').innerHTML=bH
+  document.getElementById('bar-label').textContent=ptTotal+' PT + '+spainSt+' ES = '+stations
+
+  var pRev=totalRev*stations,pCost=totalCost*stations
+  var centralOH=stations<=10?120000:stations<=30?200000:stations<=50?350000:500000
+  var pEbitda=pRev-pCost-centralOH
+
+  document.getElementById('p-metrics').innerHTML=
+    mc('Portfolio revenue',pRev,EK,'gn',1)+mc('Portfolio EBITDA',pEbitda,EK,pEbitda>=0?'gn':'rd',1)+mc('Central overhead',centralOH,EK,'am',1)
+
+  var pH='<div class="tr trh"><span>Line item</span><span style="font-family:var(--mono)">Annual</span></div>'
+  pH+='<div class="tr"><span style="color:var(--t2)">Fixed sublease ('+stations+' stn)</span><span class="mono" style="font-weight:500">'+E(fixedSublease*stations)+'</span></div>'
+  pH+='<div class="tr"><span style="color:var(--t2)">Rev share in ('+charge.toFixed(1)+'%)</span><span class="mono" style="font-weight:500">'+E(revShareIn*stations)+'</span></div>'
+  pH+='<div class="tr trs"><span style="color:var(--blue);font-weight:500">Total revenue</span><span class="mono" style="font-weight:600;color:var(--blue)">'+E(pRev)+'</span></div>'
+  pH+='<div class="tr trh"><span>Costs</span><span></span></div>'
+  pH+='<div class="tr"><span style="color:var(--t2)">Master lease</span><span class="mono" style="color:var(--red);font-weight:500">('+E(masterLease*stations)+')</span></div>'
+  pH+='<div class="tr"><span style="color:var(--t2)">Rev share to operators</span><span class="mono" style="color:var(--red);font-weight:500">('+E(revShareOut*stations)+')</span></div>'
+  pH+='<div class="tr"><span style="color:var(--t2)">Station OPEX</span><span class="mono" style="color:var(--red);font-weight:500">('+E(opex*stations)+')</span></div>'
+  pH+='<div class="tr"><span style="color:var(--t2)">Central overhead</span><span class="mono" style="color:var(--red);font-weight:500">('+E(centralOH)+')</span></div>'
+  pH+='<div class="tr trt"><span style="font-weight:600">Portfolio EBITDA</span><span class="mono" style="font-size:16px;font-weight:700;color:'+(pEbitda>=0?'var(--accent)':'var(--red)')+'">'+E(pEbitda)+'</span></div>'
+  document.getElementById('p-pnl').innerHTML=pH
+
+  // Scale chart
+  var sCtx=document.getElementById('scaleChart')
+  if(sCtx){
+    var sLabels=['1','10','30','50','100','150']
+    var sData=sLabels.map(n=>{var nn=+n;var r=totalRev*nn;var oh=nn<=10?120000:nn<=30?200000:nn<=50?350000:500000;return r-totalCost*nn-oh})
+    if(scaleChartObj){scaleChartObj.data.datasets[0].data=sData;scaleChartObj.update()}
+    else{scaleChartObj=new Chart(sCtx,{type:'bar',data:{labels:sLabels,datasets:[{label:'EBITDA',data:sData,backgroundColor:sData.map(v=>v>=0?'#00E5A066':'#EF444466'),borderColor:sData.map(v=>v>=0?'#00E5A0':'#EF4444'),borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>EK(c.raw)}}},scales:{x:{ticks:{color:'#52525B',font:{family:'DM Sans',size:10}},grid:{display:false}},y:{ticks:{color:'#52525B',font:{family:'JetBrains Mono',size:10},callback:v=>EK(v)},grid:{color:'#1e1e22'}}}}})}}
+
+  var snapshots=[1,10,30,50,100,150]
+  var lH='<div class="tr trh"><span>Stations</span><span>Revenue</span><span>EBITDA</span><span>Margin</span><span>EBITDA/stn</span></div>'
+  snapshots.forEach(n=>{
+    var r=totalRev*n,oh=n<=10?120000:n<=30?200000:n<=50?350000:500000
+    var eb=r-totalCost*n-oh,mg=r>0?eb/r:0
+    var hl=n===stations?' hl':''
+    lH+='<div class="tr'+hl+'"><span style="font-weight:600">'+n+'</span><span class="mono" style="font-weight:500">'+EK(r)+'</span><span class="mono" style="font-weight:500;color:'+(eb>=0?'var(--accent)':'var(--red)')+'">'+EK(eb)+'</span><span class="mono" style="font-weight:500">'+P(mg)+'</span><span class="mono" style="font-weight:500">'+EK(eb/n)+'</span></div>'
+  })
+  document.getElementById('leverage-tbl').innerHTML=lH
+
+  var msArr=[{n:1,l:'Pilot launch',s:'Prove the unit economics'},{n:10,l:'Portugal traction',s:'BP + OZ live'},{n:30,l:'Spain unlocked',s:'Expansion trigger met'},{n:50,l:'Iberia scale',s:'50 stations, full PT'},{n:100,l:'Growth inflection',s:'Operating leverage'},{n:150,l:'Platform maturity',s:'Full Iberian network'}]
+  var mH='';msArr.forEach(m=>{var on=stations>=m.n;var oh=m.n<=10?120000:m.n<=30?200000:m.n<=50?350000:500000
+    mH+='<div class="ms" style="opacity:'+(on?1:0.3)+'"><div class="md '+(on?'on':'off')+'">'+m.n+'</div><div style="flex:1"><div style="font-size:13px;font-weight:600">'+m.l+'</div><div style="font-size:11px;color:var(--t3)">'+m.s+'</div></div><div class="mono" style="font-size:15px;font-weight:700;color:'+(on?'var(--accent)':'var(--t3)')+'">'+EK(ebitda*m.n-oh)+'/yr</div></div>'
+  })
+  document.getElementById('milestones').innerHTML=mH
+
+  // === VALUATION ===
+  var vSnaps=[{n:30,l:'30 stations'},{n:50,l:'50 stations'},{n:150,l:'150 stations'}]
+  var vtH='<thead><tr><th>Scale</th><th>EBITDA</th><th>'+mlow.toFixed(1)+'x</th><th>'+mmid.toFixed(1)+'x</th><th>'+mhigh.toFixed(1)+'x</th><th>MOIC</th></tr></thead><tbody>'
+  vSnaps.forEach(s=>{
+    var r2=totalRev*s.n,oh2=s.n<=10?120000:s.n<=30?200000:s.n<=50?350000:500000
+    var eb2=r2-totalCost*s.n-oh2
+    var vl=eb2*mlow,vm=eb2*mmid,vh=eb2*mhigh
+    var moic=equity>0?vm/equity:0
+    var hl=s.n===stations?' class="hl"':''
+    vtH+='<tr'+hl+'><td style="font-weight:600;color:var(--t1)">'+s.l+'</td><td class="num">'+EK(eb2)+'</td><td class="num">'+EK(vl)+'</td><td class="num" style="color:var(--accent)">'+EK(vm)+'</td><td class="num">'+EK(vh)+'</td><td class="num" style="color:var(--purple)">'+X(moic)+'</td></tr>'
+  })
+  vtH+='</tbody>'
+  document.getElementById('val-tbl').innerHTML=vtH
+
+  var eq30=ebitda*30-200000,eq50=ebitda*50-350000,eq150=ebitda*150-500000
+  document.getElementById('v-metrics').innerHTML=
+    mc('30 stations',eq30*mmid,EK,'am',1)+mc('50 stations',eq50*mmid,EK,'gn',1)+mc('150 stations',eq150*mmid,EK,'bl',1)
+
+  var curVal=pEbitda*mmid,moicNow=equity>0?curVal/equity:0
+  var yrs=stations<=10?2:stations<=50?3:5
+  var irr=equity>0&&curVal>0?Math.pow(curVal/equity,1/yrs)-1:0
+  document.getElementById('r-metrics').innerHTML=
+    mc('Enterprise value',curVal,EK,'gn',1)+mc('MOIC',moicNow,X,'pp',1)+mc('IRR (~'+yrs+'yr)',irr,P,irr>0.5?'gn':irr>0.2?'am':'rd',1)
+
+  document.getElementById('footer').textContent='v2 · '+area+'sqm · €'+rent+'/sqm rent · '+charge.toFixed(1)+'% rev share · '+pass.toFixed(1)+'% to operator · €'+mlease+'/sqm lease · €'+opex.toLocaleString('en')+' OPEX · €'+setup.toLocaleString('en')+'/kiosk setup · Zero capex model · Spain unlocks at 30 PT'
+}
+calc()
+</script>
+</body>
+</html>
